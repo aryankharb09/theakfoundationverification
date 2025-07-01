@@ -186,34 +186,10 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            margin-bottom: 15px;
         }
 
         .btn-download:hover {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-            color: white;
-            text-decoration: none;
-            transform: translateY(-1px);
-        }
-
-        .btn-share {
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .btn-share:hover {
-            background: var(--primary-color);
             color: white;
             text-decoration: none;
             transform: translateY(-1px);
@@ -554,41 +530,41 @@
                 issueDate: "13 June 2025",
                 description: "Official correspondence regarding student concerns and fair consideration appeal.",
                 type: "document"
-            }
+            },
             "akf/si025/001": {
                 name: "Anuj Negi",
                 program: "Social Internship",
                 duration: "1 June 2025 - 30 June 2025",
                 status: "Verified",
                 issueDate: "30 June 2025",
-                description: " For outstanding completion of the one month social internship program at Arun Kumar Foundation",
+                description: "For outstanding completion of the one month social internship program at Arun Kumar Foundation",
                 type: "Certificate"
-            }
+            },
             "akf/si025/002": {
                 name: "Aryan Kharb",
                 program: "Social Internship",
                 duration: "1 June 2025 - 30 June 2025",
                 status: "Verified",
                 issueDate: "30 June 2025",
-                description: " For outstanding completion of the one month social internship program at Arun Kumar Foundation",
+                description: "For outstanding completion of the one month social internship program at Arun Kumar Foundation",
                 type: "Certificate"
-            }
+            },
             "akf/si025/003": {
                 name: "Sujal Rwat",
                 program: "Social Internship",
                 duration: "1 June 2025 - 30 June 2025",
                 status: "Verified",
                 issueDate: "30 June 2025",
-                description: " For outstanding completion of the one month social internship program at Arun Kumar Foundation",
+                description: "For outstanding completion of the one month social internship program at Arun Kumar Foundation",
                 type: "Certificate"
-            }
+            },
             "akf/si025/004": {
                 name: "Abhay Maurya",
                 program: "Social Internship",
                 duration: "1 June 2025 - 30 June 2025",
                 status: "Verified",
                 issueDate: "30 June 2025",
-                description: " For outstanding completion of the one month social internship program at Arun Kumar Foundation",
+                description: "For outstanding completion of the one month social internship program at Arun Kumar Foundation",
                 type: "Certificate"
             }
         };
@@ -720,10 +696,6 @@
                             <i class="fas fa-file-pdf"></i>
                             Download Certificate PDF
                         </button>
-                        <button class="btn-share" onclick="shareCertificate()">
-                            <i class="fas fa-share"></i>
-                            Share Certificate
-                        </button>
                     </div>
                 </div>
             `;
@@ -777,187 +749,41 @@
             }
 
             try {
-                // Dynamically load jsPDF
-                let jsPDF;
+                // Create a simple text-based content for download
+                const content = `ARUN KUMAR FOUNDATION
+Certificate Information
 
-                // Check if jsPDF is already loaded
-                if (typeof window !== "undefined" && window.jspdf) {
-                    jsPDF = window.jspdf.jsPDF;
-                } else {
-                    // Load jsPDF dynamically
-                    const script = document.createElement("script");
-                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+Name: ${currentCertificate.name}
+Program: ${currentCertificate.program}
+Duration: ${currentCertificate.duration}
+Certificate ID: ${currentCertId}
+Issue Date: ${currentCertificate.issueDate}
+Type: ${currentCertificate.type.charAt(0).toUpperCase() + currentCertificate.type.slice(1)}
+Status: ${currentCertificate.status}
 
-                    await new Promise((resolve, reject) => {
-                        script.onload = resolve;
-                        script.onerror = reject;
-                        document.head.appendChild(script);
-                    });
+Description:
+${currentCertificate.description}
 
-                    // Wait a bit for the library to initialize
-                    await new Promise((resolve) => setTimeout(resolve, 100));
+© 2025 Arun Kumar Foundation. All rights reserved.`;
 
-                    if (window.jspdf) {
-                        jsPDF = window.jspdf.jsPDF;
-                    } else {
-                        throw new Error("jsPDF failed to load");
-                    }
-                }
+                // Create a blob with the content
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
 
-                // Create PDF document
-                const doc = new jsPDF();
-
-                // Set colors
-                const primaryColor = [5, 150, 105]; // Green
-                const textColor = [31, 41, 55]; // Dark gray
-                const lightGray = [107, 114, 128];
-
-                // Header with foundation branding
-                doc.setFillColor(...primaryColor);
-                doc.rect(0, 0, 210, 35, "F");
-
-                // Foundation name
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
-                doc.setFont("helvetica", "bold");
-                doc.text("ARUN KUMAR FOUNDATION", 20, 20);
-
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                doc.text("Certificate Information", 20, 28);
-
-                // Certificate name/title (main content)
-                doc.setTextColor(...textColor);
-                doc.setFontSize(18);
-                doc.setFont("helvetica", "bold");
-                const nameLines = doc.splitTextToSize(currentCertificate.name, 170);
-                doc.text(nameLines, 20, 55);
-
-                let yPosition = 55 + nameLines.length * 8;
-
-                // Certificate details in a clean format
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-
-                const details = [
-                    { label: "Program", value: currentCertificate.program },
-                    { label: "Duration", value: currentCertificate.duration },
-                    { label: "Certificate ID", value: currentCertId },
-                    { label: "Issue Date", value: currentCertificate.issueDate },
-                    { label: "Type", value: currentCertificate.type.charAt(0).toUpperCase() + currentCertificate.type.slice(1) },
-                ];
-
-                details.forEach((detail) => {
-                    yPosition += 15;
-                    doc.setTextColor(...lightGray);
-                    doc.setFont("helvetica", "bold");
-                    doc.text(`${detail.label}:`, 20, yPosition);
-                    doc.setTextColor(...textColor);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(detail.value, 20, yPosition + 7);
-                });
-
-                // Description if available
-                if (currentCertificate.description) {
-                    yPosition += 20;
-                    doc.setTextColor(...lightGray);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Description:", 20, yPosition);
-
-                    yPosition += 10;
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(...textColor);
-                    const descLines = doc.splitTextToSize(currentCertificate.description, 170);
-                    doc.text(descLines, 20, yPosition);
-                }
-
-                // Save the PDF with a clean filename
-                const fileName = `${currentCertificate.name.replace(/[^a-zA-Z0-9]/g, "-")}-certificate.pdf`;
-                doc.save(fileName);
+                // Create download link
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentCertificate.name.replace(/[^a-zA-Z0-9]/g, '-')}-certificate.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
 
                 showToast('Certificate downloaded successfully!', 'success');
             } catch (error) {
-                console.error('PDF generation error:', error);
-                showToast('PDF generation failed. Please try again.', 'error');
+                console.error('Download error:', error);
+                showToast('Download failed. Please try again.', 'error');
             }
-        }
-
-        function shareCertificate() {
-            if (!currentCertificate || !currentCertId) {
-                showToast('No certificate data available', 'error');
-                return;
-            }
-
-            const typeInfo = getTypeInfo(currentCertificate.type);
-            
-            const shareText = `🎓 Certificate - Arun Kumar Foundation
-
-📋 ${currentCertificate.name}
-✅ Status: ${currentCertificate.status}
-🏷️ Type: ${typeInfo.label}
-📚 Program: ${currentCertificate.program}
-📅 Duration: ${currentCertificate.duration}
-🆔 Certificate ID: ${currentCertId}
-📆 Issue Date: ${currentCertificate.issueDate}
-
-📝 ${currentCertificate.description}
-
-© Arun Kumar Foundation`;
-
-            // Try native sharing first (works on mobile)
-            if (navigator.share) {
-                navigator.share({
-                    title: '🎓 Certificate - Arun Kumar Foundation',
-                    text: shareText,
-                    url: window.location.href
-                }).then(() => {
-                    showToast('Certificate shared successfully!', 'success');
-                }).catch((error) => {
-                    console.log('Native sharing failed:', error);
-                    fallbackShare(shareText);
-                });
-            } else {
-                fallbackShare(shareText);
-            }
-        }
-
-        function fallbackShare(text) {
-            // Try clipboard API
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast('Certificate details copied to clipboard!', 'success');
-                }).catch(() => {
-                    legacyFallbackShare(text);
-                });
-            } else {
-                legacyFallbackShare(text);
-            }
-        }
-
-        function legacyFallbackShare(text) {
-            // Legacy fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showToast('Certificate details copied to clipboard!', 'success');
-                } else {
-                    showToast('Unable to copy. Please copy manually.', 'error');
-                }
-            } catch (err) {
-                console.error('Fallback copy failed:', err);
-                showToast('Copy failed. Please try again.', 'error');
-            }
-            
-            document.body.removeChild(textArea);
         }
 
         function showToast(message, type = 'success') {
